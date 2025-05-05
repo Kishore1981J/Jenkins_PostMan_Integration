@@ -1,6 +1,9 @@
 pipeline {
     agent any
 stages {
+      tools {
+        nodejs "Node1" // Use the Node.js installation configured in Jenkins
+    }
         stage('Checkout') {
             steps {
                 // Checkout the code from the repository
