@@ -22,7 +22,7 @@ pipeline {
         stage('Run Postman Collection') {
             steps {
                 script {
-                    def collectionPath = 'Monitor_Collection.postman_collection.json'
+                    def collectionPath = 'Jenkins_Integration_Collection.postman_collection.json'
                     sh """
                         newman run ${collectionPath} --reporters cli,junit --reporter-junit-export newman-report.xml
                     """
