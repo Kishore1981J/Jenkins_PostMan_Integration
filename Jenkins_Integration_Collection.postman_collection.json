@@ -1,0 +1,595 @@
+{
+	"info": {
+		"_postman_id": "401f0582-0031-4846-8ba8-789267680961",
+		"name": "Monitor_Collection",
+		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3610072"
+	},
+	"item": [
+		{
+			"name": "Get_Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// ✅ Status & Headers",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is acceptable (< 800ms)\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});",
+							"",
+							"// ✅ Root-level Pagination Properties",
+							"pm.test(\"Root-level pagination fields are present and correct\", function () {",
+							"    pm.expect(jsonData).to.have.all.keys(\"page\", \"per_page\", \"total\", \"total_pages\", \"data\", \"support\");",
+							"    pm.expect(jsonData.page).to.eql(1);",
+							"    pm.expect(jsonData.per_page).to.eql(6);",
+							"    pm.expect(jsonData.total).to.eql(12);",
+							"    pm.expect(jsonData.total_pages).to.eql(2);",
+							"});",
+							"",
+							"// ✅ Data Array Validations",
+							"pm.test(\"Data array has 6 user objects\", function () {",
+							"    pm.expect(jsonData.data).to.be.an(\"array\").with.lengthOf(6);",
+							"});",
+							"",
+							"pm.test(\"Each user object has expected fields and valid email format\", function () {",
+							"    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+							"    jsonData.data.forEach(function (user) {",
+							"        pm.expect(user).to.have.all.keys(\"id\", \"email\", \"first_name\", \"last_name\", \"avatar\");",
+							"        pm.expect(user.email).to.match(emailRegex);",
+							"        pm.expect(user.avatar).to.match(/^https:\\/\\/reqres\\.in\\/img\\/faces\\/\\d+-image\\.jpg$/);",
+							"    });",
+							"});",
+							"",
+							"// ✅ Support Section Checks",
+							"pm.test(\"Support section is present and valid\", function () {",
+							"    pm.expect(jsonData.support).to.be.an(\"object\");",
+							"    pm.expect(jsonData.support.url).to.match(/^https:\\/\\/.+/);",
+							"    pm.expect(jsonData.support.text).to.be.a(\"string\").and.to.not.be.empty;",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/users",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Users_SpecificUSer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse response as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// ✅ Status & Headers",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"",
+							"pm.test(\"Response time is under 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});",
+							"",
+							"// ✅ Root-level Structure",
+							"pm.test(\"Response has 'data' and 'support' objects\", function () {",
+							"    pm.expect(jsonData).to.have.all.keys(\"data\", \"support\");",
+							"});",
+							"",
+							"// ✅ User Data Validation",
+							"pm.test(\"User data contains correct fields and values\", function () {",
+							"    const user = jsonData.data;",
+							"    pm.expect(user).to.have.all.keys(\"id\", \"email\", \"first_name\", \"last_name\", \"avatar\");",
+							"    pm.expect(user.id).to.eql(2);",
+							"    pm.expect(user.email).to.eql(\"janet.weaver@reqres.in\");",
+							"    pm.expect(user.first_name).to.eql(\"Janet\");",
+							"    pm.expect(user.last_name).to.eql(\"Weaver\");",
+							"    pm.expect(user.avatar).to.eql(\"https://reqres.in/img/faces/2-image.jpg\");",
+							"});",
+							"",
+							"// ✅ Validate Email and Avatar Format",
+							"pm.test(\"User email has a valid format\", function () {",
+							"    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+							"    pm.expect(jsonData.data.email).to.match(emailRegex);",
+							"});",
+							"",
+							"pm.test(\"User avatar is a valid HTTPS URL\", function () {",
+							"    pm.expect(jsonData.data.avatar).to.match(/^https:\\/\\/reqres\\.in\\/img\\/faces\\/\\d+-image\\.jpg$/);",
+							"});",
+							"",
+							"// ✅ Support Section Validation",
+							"pm.test(\"Support section contains valid URL and text\", function () {",
+							"    pm.expect(jsonData.support).to.have.all.keys(\"url\", \"text\");",
+							"    pm.expect(jsonData.support.url).to.match(/^https:\\/\\/.+/);",
+							"    pm.expect(jsonData.support.text).to.be.a(\"string\").and.to.not.be.empty;",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/users/2",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create_User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse response as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// ✅ Status & Headers",
+							"pm.test(\"Status code is 201 (Created)\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"// ✅ Check Required Properties",
+							"pm.test(\"Response has 'name', 'job', 'id', and 'createdAt' fields\", function () {",
+							"    pm.expect(jsonData).to.have.all.keys(\"name\", \"job\", \"id\", \"createdAt\");",
+							"});",
+							"",
+							"// ✅ Validate 'name' and 'job' Values",
+							"pm.test(\"Name and job values are as expected\", function () {",
+							"    pm.expect(jsonData.name).to.eql(\"David\");",
+							"    pm.expect(jsonData.job).to.eql(\"Cricketer\");",
+							"});",
+							"",
+							"// ✅ Validate 'id' Format",
+							"pm.test(\"ID is a non-empty string\", function () {",
+							"    pm.expect(jsonData.id).to.be.a(\"string\").and.to.not.be.empty;",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"David\",\n\"job\":\"Cricketer\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/users",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse response as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// ✅ Status & Headers",
+							"pm.test(\"Status code is 200 (updated)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"// ✅ Check Required Properties",
+							"pm.test(\"Response has 'name', 'job', and 'updatedAt' fields\", function () {",
+							"    pm.expect(jsonData).to.have.all.keys(\"name\", \"job\", \"updatedAt\");",
+							"});",
+							"",
+							"// ✅ Validate 'name' and 'job' Values",
+							"pm.test(\"Name and job values are as expected\", function () {",
+							"    pm.expect(jsonData.name).to.eql(\"Morpheus\");",
+							"    pm.expect(jsonData.job).to.eql(\"Cricketer\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"Morpheus\",\n\"job\":\"Cricketer\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/users/2",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_User_ID2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse response as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// ✅ Status & Headers",
+							"pm.test(\"Status code is 200 (updated)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"// ✅ Check Required Properties",
+							"pm.test(\"Response has 'name', 'job', and 'updatedAt' fields\", function () {",
+							"    pm.expect(jsonData).to.have.all.keys(\"name\", \"job\", \"updatedAt\");",
+							"});",
+							"",
+							"// ✅ Validate 'name' and 'job' Values",
+							"pm.test(\"Name and job values are as expected\", function () {",
+							"    pm.expect(jsonData.name).to.eql(\"Morpheus\");",
+							"    pm.expect(jsonData.job).to.eql(\"Teacher\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"Morpheus\",\n\"job\":\"Teacher\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/users/2",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ✅ Status & Headers",
+							"pm.test(\"Status code is 204 (Deleted)\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has a body before parsing\", function () {",
+							"    pm.expect(pm.response.text()).to.be.empty;",
+							"});",
+							"",
+							"if (pm.response.text()) {",
+							"    let jsonData = pm.response.json();",
+							"    // your other tests here",
+							"} else {",
+							"    console.warn(\"Empty response body — skipping JSON tests.\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://reqres.in/api/users/2",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}
